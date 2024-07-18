@@ -2,6 +2,8 @@ import numpy as np
 
 from utils.preprocessing import data_loader
 from utils import activations
+
+
 class MLP():
     def __init__(self, arch):
         leng = len(arch)
