@@ -33,13 +33,10 @@ class MLP():
             H.append(self.act[l](A[-1]))
         return A, H  # pre-activation, post-activation (i.e., hypothesis at each layer)
 
-    def __backprop(self, y, A, H, loss_fct='mse'):
+    def __backprop(self, y, A, H):
         dW, db = [], []
 
-        if loss_fct == 'mse':
-            loss = np.mean((H[-1] - y) ** 2)
-        elif loss_fct == 'cross-entropy':
-            loss = -np.mean(y * np.log(H[-1]) + (1 - y) * np.log(1 - H[-1]))
+        loss = np.mean((H[-1] - y) ** 2)
 
         delta = [-np.array((y-H[-1]) * activations.relu_prime(A[-1])).squeeze()]
         dW.append(H[-2].T * delta[-1])
@@ -58,7 +55,7 @@ class MLP():
                 ## Forward pass
                 A, H = self.__feedforward(data_X)
                 ## Backward pass
-                loss, dW, db = self.__backprop(data_y, A, H, loss_fct=settings['loss'])
+                loss, dW, db = self.__backprop(data_y, A, H)
                 print('loss at epoch {}: {}'.format(epoch, loss))
                 ## Update weights
                 for l in range(len(self)):
