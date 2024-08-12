@@ -1,48 +1,55 @@
 import numpy as np
 
 
-### DATA SPLIT
-def train_test_split(X, y, split_ratio=.8):
+# DATA SPLIT
+def train_test_split(x, y, split_ratio=.8):
     """
     Split the dataset intro training and testing sets
     Parameters
     ----------
-    X: array
+    x: array
         Features
     y: array
-        Labels
+        Targets/Labels
     split_ratio: float
         Ratio of the split
     """
+    leng = x.shape[0]
+    tronc = np.floor(leng * split_ratio).astype(int) if split_ratio < 1 else x.shape[0]
+    # random indices and shuffle them one more time
+    indices = np.random.choice(leng, leng, replace=False)
+    np.random.shuffle(indices)
+    # subsets of data `train` and `test`
+    train, test = indices[:tronc], indices[tronc:]
+    # split data in `train` and `test` sets
+    x_train, x_test = x[train], x[test]
+    y_train, y_test = y[train], y[test]
 
-    X_train = []
-    y_train = []
-    X_test = []
-    y_test = []
-
-    for i in range(len(X)):
-        if np.random.rand() < split_ratio:
-            X_train.append(X[i])
-            y_train.append(y[i])
-        else:
-            X_test.append(X[i])
-            y_test.append(y[i])
-
-    return (np.array(X_train), np.array(X_test)), (np.array(y_train), np.array(y_test))
+    return (x_train, x_test), (y_train, y_test)
 
 
-### DATA LOADER
-def data_loader(X, y, batch_size=1):
+# DATA LOADER
+def data_loader(x, y, batch_size=1):
     """
     Parameters
     ----------
-    X: array
+    x: array
         Features
     y: array
         Labels
     batch_size: int
         Batch size
     """
+    leng = x.shape[0]
+    how_many, rem = leng // batch_size, leng % batch_size
 
-    for i in range(0, len(X), batch_size):
-        yield X[i:i + batch_size], y[i:i + batch_size]
+    indices = np.random.choice(leng, leng, replace=False)
+    np.random.shuffle(indices)
+    x = x[indices]
+    y = y[indices]
+
+    for i in range(0, how_many):
+        yield x[i:i+batch_size], y[i:i+batch_size]
+
+    if rem != 0:
+        yield x[how_many*batch_size:], y[how_many*batch_size:]
