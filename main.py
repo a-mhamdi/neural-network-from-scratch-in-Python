@@ -3,16 +3,16 @@ from sklearn import datasets
 import numpy as np
 from matplotlib import pyplot as plt
 
-from utils.preprocessing import train_test_split
-from utils.mlp import MLP
-from utils.activations import relu, sigmoid
-from utils.metrics import loss_fct, accuracy
+from src.preprocessing import train_test_split
+from src.mlp import MLP
+from src.activations import relu, sigmoid, linear
+from src.metrics import loss_fct, r2_score, accuracy, precision, recall, f1_score, cm
 
 np.random.seed(1234)
 
 # Dataset Load
 ds = datasets.load_breast_cancer()
-X, y = ds.data, ds.target
+X, y = ds.data, ds.target.reshape(-1, 1)
 
 n_features, epochs = X.shape[1], 16
 
@@ -21,6 +21,7 @@ try:
 except IndexError:
     n_targets = 1
 
+# Data Split
 (X_train, X_test), (y_train, y_test) = train_test_split(X, y)
 
 # Standardization/ Normalization
@@ -31,28 +32,32 @@ mn, mx = np.min(X_train, axis=0), np.max(X_train, axis=0)
 X_train, X_test = (X_train - mn) / (mx - mn), (X_test - mn) / (mx - mn)
 
 # Model Design
-model = MLP([[n_features, 16, relu], [8, relu], [4, relu], [n_targets, sigmoid]])
+model = MLP([[n_features, 20, relu], [20, relu], [20, relu], [5, relu], [n_targets, sigmoid]])
 model.summary()
 
 settings = {
-    'batch_size': 12,
-    'loss': 'bce',
+    'batch_size': 8,
+    'loss': 'mse',
     'optimizer': 'sgd',
-    'lr': 1e-2,
+    'lr': 1e-3,
     'regularization': 'none',
-    'lambda': 0.1,
+    'lambda': 0.3,
     'r': 0.5
 }
 
 ltrn, ltst = [], []
 for epoch in range(epochs):
     model.fit(X_train, y_train, hparams=settings)
-    ytrn_hat = model.predict(X_train)  # predicted `train` output
+    ytrn_hat = model(X_train)  # predicting the `train` set
     ltrn.append(loss_fct(y_train, ytrn_hat, hparams=settings))
-    ytst_hat = model.predict(X_test)  # predicted `test` output
+    ytst_hat = model(X_test)  # predicting the `test` set
     ltst.append(loss_fct(y_test, ytst_hat, hparams=settings))
 
-    print(f"{accuracy(y_train, ytrn_hat): .3f}", f"{accuracy(y_test, ytst_hat): .3f}", sep=' | ')
+print(f"Accuracy: {accuracy(y_train, ytrn_hat): .3f}", f"{accuracy(y_test, ytst_hat): .3f}", sep=' | ')
+print(f"Precision: {precision(y_train, ytrn_hat): .3f}", f"{precision(y_test, ytst_hat): .3f}", sep=' | ')
+print(f"Recall: {recall(y_train, ytrn_hat): .3f}", f"{recall(y_test, ytst_hat): .3f}", sep=' | ')
+print(f"F1-score: {f1_score(y_train, ytrn_hat): .3f}", f"{f1_score(y_test, ytst_hat): .3f}", sep=' | ')
+print("Confusion Matrix", 16*"=", "TRAIN SET",  cm(y_train, ytrn_hat), "TEST SET", cm(y_test, ytst_hat), sep='\n')
 
 fig, ax = plt.subplot_mosaic([['a', 'b'], ['a', 'c']], layout='constrained')
 

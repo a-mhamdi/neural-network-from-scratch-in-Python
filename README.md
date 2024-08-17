@@ -5,4 +5,11 @@ Detailed steps of the backpropagation algorithm are shown in the animation below
 
 ![BackProp](./imgs/backprop.gif)
 
-The code is written in `Python` and can be found in the `utils` folder. The `main.py` file contains the main code to run the simulation.
+**Simulation**
+
+Simulation results for a classification problem are shown below. The used dataset is `breast_cancer` from the `sklearn` library.
+
+![Simulation](./imgs/simulation.png)
+![Graphs](./imgs/graphs.png)
+
+The code is written in `Python` and can be found in the `src` folder. The `main.py` file contains the main code to run the simulation.
