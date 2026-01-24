@@ -1,6 +1,9 @@
 # Neural Network From Scratch In Python
 We build and train a neural network architecture in `Python` without usage of deep learning frameworks.
 
+> [!IMPORTANT]
+> **What I cannot create, I do not understand.** *(Richard Feynman)*
+
 Detailed steps of the backpropagation algorithm are shown in the animation below ([source](https://github.com/a-mhamdi/jlai/blob/main/Slides-Labs/Demystifying%20AI%20Sorcery%20(Part-1).pdf)).
 
 ![BackProp](./imgs/backprop.gif)
